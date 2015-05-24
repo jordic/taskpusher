@@ -7,13 +7,14 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"strconv"
 )
 
 func TestWebTaskRuns(t *testing.T) {
 
-	c := make(chan int)
+	c := make(chan string)
 	task := WebTask{
-		ID:  1,
+		ID:  strconv.Itoa(1),
 		URL: "http://www.google.com",
 	}
 
@@ -33,7 +34,7 @@ func TestWebTaskRuns(t *testing.T) {
 
 	// test bad url
 	task = WebTask{
-		ID:  2,
+		ID:  strconv.Itoa(2),
 		URL: "ht://www.google.com",
 	}
 	go task.Run(c)
@@ -46,7 +47,7 @@ func TestWebTaskRuns(t *testing.T) {
 
 	// test url not found
 	task = WebTask{
-		ID:  2,
+		ID:  strconv.Itoa(2),
 		URL: "http://www.google.com/asdf",
 	}
 
@@ -76,9 +77,9 @@ func TestTaskWebTimeout(t *testing.T) {
 	
 
 	//fmt.Print(ts.URL)
-	c := make(chan int)
+	c := make(chan string)
 	task := &WebTask{
-		ID:  2,
+		ID:  strconv.Itoa(2),
 		URL: ts.URL,
 		Client: &http.Client{
 			Timeout: 300 * time.Millisecond,
