@@ -1,3 +1,9 @@
+// Task Manager
+// This is the Job manager. It can handle any type of job, 
+// that implements interface Tasker.
+// Status: Incomplete/work in progress
+
+
 package taskpusher
 
 import (
@@ -5,6 +11,9 @@ import (
 	"sync"
 )
 
+// Creates a new manager, with some good defaults
+// size, is the number of concurrent workers that the 
+// Mnaager will launch.
 func NewManager(size int) *Manager {
 
 	m := &Manager{
@@ -45,7 +54,6 @@ func (m *Manager) Add(t Tasker) {
 
 func (m *Manager) worker() {
 	for j := range m.in {
-		//fmt.Println("started", j)
 		m.Lock()
 		m.running[j.UID()] = j
 		delete(m.waiting, j.UID())
@@ -71,7 +79,7 @@ func (m *Manager) Run() {
 			if false == ok {
 				return
 			}
-			fmt.Println("Completed", b)
+			//fmt.Println("Completed", b)
 			m.Lock()
 			task := m.running[b]
 			m.completed[b] = task
@@ -94,8 +102,6 @@ func (m *Manager) Run() {
 func (m *Manager) Close() {
 	m.wg.Wait()
 	m.quit <- true
-	
-	
 	close(m.in)
 	close(m.responses)
 
