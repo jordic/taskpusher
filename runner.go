@@ -14,7 +14,7 @@ import (
 // Creates a new manager, with some good defaults
 // size, is the number of concurrent workers that the 
 // Mnaager will launch.
-func NewManager(size int) *Manager {
+func NewManager(size int, db Backend) *Manager {
 
 	m := &Manager{
 		responses: make(chan string, size+1),
@@ -24,6 +24,7 @@ func NewManager(size int) *Manager {
 		waiting:   make(map[string]Tasker),
 		completed: make(map[string]Tasker),
 		running:   make(map[string]Tasker),
+		backend: db,
 	}
 	m.init()
 	return m
@@ -38,6 +39,7 @@ type Manager struct {
 	waiting   map[string]Tasker
 	running   map[string]Tasker
 	completed map[string]Tasker
+	backend	  Backend
 	wg	sync.WaitGroup
 	sync.RWMutex
 	
@@ -48,6 +50,7 @@ func (m *Manager) Add(t Tasker) {
 	m.Lock()
 	m.waiting[t.UID()] = t
 	m.Unlock()
+	m.backend.Save(t)
 	m.wg.Add(1)
 	m.in <- t
 }
@@ -57,6 +60,8 @@ func (m *Manager) worker() {
 		m.Lock()
 		m.running[j.UID()] = j
 		delete(m.waiting, j.UID())
+		j.SetStatus(StateRunning)
+		m.backend.Save(j)
 		m.Unlock()
 		j.Run(m.responses)
 	}
@@ -83,6 +88,7 @@ func (m *Manager) Run() {
 			m.Lock()
 			task := m.running[b]
 			m.completed[b] = task
+			m.backend.Save(task)
 			delete(m.running, b)
 			m.Unlock()
 			m.wg.Done()

@@ -69,7 +69,6 @@ func (db *BoltBack) Load(status int) []Tasker {
 			}
 			
 			state := int(temp["Status"].(float64))
-			log.Println(state)
 			if state == -1 || state == status {
 				obj := FactoryTask(temp["Type"].(string))
 				err = json.Unmarshal(v, obj)

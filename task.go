@@ -66,7 +66,7 @@ func (w *WebTask) Run(s chan string) {
 	}
 
 	t := time.Now()
-	w.status = StateRunning
+	
 
 	resp, err := w.Client.Get(w.URL)
 	if err != nil {

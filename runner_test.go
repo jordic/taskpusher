@@ -54,6 +54,20 @@ func (t *SlowTask) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a)
 }
 
+
+type InMemoryBack struct {
+	Tasks []Tasker
+}
+
+func (m *InMemoryBack) Save(t Tasker) {
+	m.Tasks = append(m.Tasks, t)
+}
+func (m *InMemoryBack) Load(s int) []Tasker {
+	return m.Tasks
+}
+
+
+
 func init() {
 	RegisterTaskType("SlowTask", func() Tasker { return &SlowTask{} })
 
@@ -61,7 +75,10 @@ func init() {
 
 func TestRunner(t *testing.T) {
 
-	man := NewManager(4)
+	im := &InMemoryBack{
+		Tasks: make([]Tasker, 0),
+	}
+	man := NewManager(4, im)
 	go man.Run()
 
 	for i := 1; i <= 10; i++ {
@@ -75,7 +92,8 @@ func TestRunner(t *testing.T) {
 	time.Sleep(180 * time.Millisecond)
 
 	if len(man.Completed()) != 4 {
-		t.Errorf("Completed list should be %d was %d", 4, len(man.Completed()))
+		t.Errorf("Completed list should be %d was %d", 4, 
+			len(man.Completed()))
 	}
 
 	for i := 1; i <= 10; i++ {
