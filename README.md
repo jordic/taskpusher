@@ -5,14 +5,14 @@ Just a small, single binary, task pusher, job queue, based on http.
 
 #### Status. 
 	
-	**Alpha. Incomplet.** 
-	
-	Finished: Job queue, and webTasks
-	
-	Pending:
-		+ Backend persistence.
-		- Log handling
-		- Http API
+**Alpha. Incomplet.** 
+
+Finished: Job queue, and webTasks
+
+Pending:
+	+ Backend persistence.
+	- Log handling
+	- Http API
 
 
 #### Motivation
@@ -77,7 +77,7 @@ Client libraries for popular languages will not be written. Perhaps a small libr
 
 #### Backend and Persistence.
 
-At the moment, the backend persistence layer is based on boltdb. An embedable key/value store without dependenciess for go. On future, adapters for mysql, or whatever else could be written.
+At the moment, the backend persistence layer is based on boltdb. An embedable key/value store without dependenciess for go. On future, adapters for disk, or whatever else could be written.
 
 
 #### Api and operation.
