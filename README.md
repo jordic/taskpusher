@@ -1,15 +1,16 @@
 
-### TinyTaskPusher
+### TaskPusher
 
 Just a small, single binary, task pusher, job queue, based on http.
 
 #### Status. 
+	
 	**Alpha. Incomplet.** 
 	
-	Finished: Job queue, and webTasks.
+	Finished: Job queue, and webTasks
 	
 	Pending:
-		- Backend persistence.
+		+ Backend persistence.
 		- Log handling
 		- Http API
 

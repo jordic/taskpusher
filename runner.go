@@ -13,7 +13,9 @@ import (
 
 // Creates a new manager, with some good defaults
 // size, is the number of concurrent workers that the 
-// Mnaager will launch.
+// Manager will launch.
+// Also receives a backend to storing tasks, 
+// BoltBack
 func NewManager(size int, db Backend) *Manager {
 
 	m := &Manager{

@@ -112,7 +112,7 @@ func (w *WebTask) SetStatus( s int )  {
 	w.status = s
 }
 
-
+// WebTask should implement Marshaler, to get stored to disk.
 func (w *WebTask) MarshalJSON() ([]byte, error) {
 
 	a := struct {
