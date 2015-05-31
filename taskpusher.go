@@ -1,8 +1,7 @@
 // Task Manager
-// This is the Job manager. It can handle any type of job, 
+// This is the Job manager. It can handle any type of job,
 // that implements interface Tasker.
 // Status: Incomplete/work in progress
-
 
 package taskpusher
 
@@ -12,9 +11,9 @@ import (
 )
 
 // Creates a new manager, with some good defaults
-// size, is the number of concurrent workers that the 
+// size, is the number of concurrent workers that the
 // Manager will launch.
-// Also receives a backend to storing tasks, 
+// Also receives a backend to storing tasks,
 // BoltBack
 func NewManager(size int, db Backend) *Manager {
 
@@ -23,10 +22,11 @@ func NewManager(size int, db Backend) *Manager {
 		in:        make(chan Tasker, size),
 		quit:      make(chan bool),
 		size:      size,
+		stopped:   false,
 		waiting:   make(map[string]Tasker),
 		completed: make(map[string]Tasker),
 		running:   make(map[string]Tasker),
-		backend: db,
+		backend:   db,
 	}
 	m.init()
 	return m
@@ -38,13 +38,13 @@ type Manager struct {
 	in        chan Tasker
 	quit      chan bool
 	size      int
+	stopped   bool
 	waiting   map[string]Tasker
 	running   map[string]Tasker
 	completed map[string]Tasker
-	backend	  Backend
-	wg	sync.WaitGroup
+	backend   Backend
+	wg        sync.WaitGroup
 	sync.RWMutex
-	
 }
 
 // Add a task to the queue
@@ -53,6 +53,10 @@ func (m *Manager) Add(t Tasker) {
 	m.waiting[t.UID()] = t
 	m.Unlock()
 	m.backend.Save(t)
+	if m.stopped == true {
+		return
+	}
+
 	m.wg.Add(1)
 	m.in <- t
 }
@@ -108,6 +112,7 @@ func (m *Manager) Run() {
 // Closes the task manager, waiting to finish it with
 // pending tasks..
 func (m *Manager) Close() {
+	m.stopped = true
 	m.wg.Wait()
 	m.quit <- true
 	close(m.in)
